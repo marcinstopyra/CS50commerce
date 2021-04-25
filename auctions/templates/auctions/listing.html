@@ -1,0 +1,77 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+  <h1>{{ listing.title }}</h1>
+  <form action="{% url 'update_watchlist' listing.title %}">
+  {% if user.is_authenticated and listing.status_active and listing.creator.username != user.username %}
+  {% if watchlist_status %}
+    Watchlist: <input type="submit" class="btn btn-outline-danger" name="action" value="remove"></input>
+  {% else %}
+    Watchlist: <input type="submit" class="btn btn-outline-primary" name="action" value='add'></input>
+  {% endif %}
+  {% endif %}
+
+  <p>created by: {{ listing.creator }}</p>
+  </form>
+  {% if listing.status_active == False %}
+  {% if user == listing.winner %}
+  <div class="alert alert-success" role="alert">
+    The aucton was won by <b>YOU!</b>
+  </div>
+  {% elif user == listing.creator %}
+        {% if listing.winner == Null %}
+          <div class="alert alert-danger" role="alert">
+            The aucton is finished, there were <b>NO</b> offers
+          </div>
+        {% else%}
+          <div class="alert alert-success" role="alert">
+            The aucton was won by <b>{{ listing.winner.username }}</b>, who offered to pay: <b>{{ listing.current_price }}</b>
+          </div>
+        {% endif %}
+  {% else %}
+  <div class="alert alert-danger" role="alert">
+    The aucton is <b>finished!</b>
+  </div>
+  {% endif %}
+  {% endif %}
+  {% if listing.creator.username == user.username and listing.status_active %}
+  <form action="{% url 'close_listing' listing.title %}">
+    <button type="submit" class="btn btn-outline-danger"  value='close_listing'><b>close listing</b></button>
+  </form>
+  {% endif %}
+  <hr>
+  {% if listing.status_active == False %}
+    <h3>final price: <b>{{ listing.current_price }}</b></h3>
+  {% else %}
+    <h3>Current price: <b>{{ listing.current_price }}</b></h3>
+  {% endif %}
+
+  <img src="{{ listing.photo }}">
+  <p>
+    {{ listing.description }}
+  </p>
+  {% if user.is_authenticated and listing.status_active and listing.creator.username != user.username %}
+  
+  <h3>Make your bid!</h3>
+  <form name="bid_form" action="{% url 'make_bid' listing.title %}" method='POST'>
+    {% csrf_token %}
+    <input type='number' name="bid" step=0.1 value='{{ listing.current_price }}' min="{{ listing.current_price|add:1 }}">
+    <button type="submit" class="btn btn-outline-primary"  value='make_bid'>submit</button>
+  </form>
+  {% endif %}
+<hr>
+<h3>Comments:</h3>
+  {% if user.is_authenticated %}
+  <form  action="{% url 'make_comment' listing.title %}" method="POST">
+    {% csrf_token %}
+    <textarea class="form-control" name="comment" id="comment" placeholder="Enter your comment..." ></textarea>
+    <button type="submit" class="btn btn-outline-primary"  value='make_bid'>submit</button>
+  </form>
+  {% endif %}
+
+{% for comment in comments %}
+<p>user: <b>{{ comment.made_by }}</b></p>
+{{ comment.text }}
+{% endfor %}
+  
+{% endblock %}

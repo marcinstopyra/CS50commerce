@@ -1,0 +1,19 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h3>Your watchlist</h3>
+{% for listing in watchlist_items %}
+<div>
+  <a href="{% url 'listing_view' listing.title %}"><h4>{{ listing.title }}</h4></a>
+  <img src="{{ listing.photo }}">
+  <p>{{ listing.description }}</p>
+  <p>current price: {{ listing.current_price }} </p>
+  <p>created by: {{ listing.creator }} </p>
+</div>
+<hr>
+{% empty %}
+<p>No listings to show</p>
+{% endfor %}
+
+  
+{% endblock %}
