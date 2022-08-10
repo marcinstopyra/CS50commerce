@@ -10,4 +10,4 @@ An auction portal web application prepared as a project for [CS50 Web Developmen
 ## view listing / make bid
 ![register](./screenshots/make_bid.png)
 ## others
-User can also add listings to her/his wishlist, browse wishlist and browse listings filtered by categories
+User can also add listings to her/his wishlist, browse wishlist and listings filtered by categories, add comments to listings
